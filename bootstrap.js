@@ -245,6 +245,8 @@ function addButton(n,u) {
 }
 
 function onPageLoad(doc) {
+	var editForm = doc.querySelector('.js-blob-form.js-blob-edit-form');
+	
 	if(doc.location.pathname.replace(/\/[^/]+$/,'').substr(-4) === 'pull') {
 		// Based on work by Jerone: https://github.com/jerone/UserScripts
 
@@ -292,7 +294,7 @@ function onPageLoad(doc) {
 			}
 		}
 	}
-	else if (var editForm = doc.querySelector('.js-blob-form.js-blob-edit-form') && editForm.hasAttribute('action')) {
+	else if (editForm && editForm.hasAttribute('action')) {
 		//add disabled button saying it is checking parent dirs for install.rdf
 		var filePath = editForm.getAttribute('action'); //'https://github.com/yajd/XPICompiler/tree-save/master/release/bootstrap.js';
 		//start searching parent dirs till find intall.rdf, first install.rdf it finds it will install that and edit this file into it
