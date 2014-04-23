@@ -300,7 +300,7 @@ function onPageLoad(doc) {
 		//start searching parent dirs till find intall.rdf, first install.rdf it finds it will install that and edit this file into it
 		var determineAndloadDir = function(argFilePath) {
 			var pathSplit = argFilePath.split('/');
-			dirPath = pathSplit.join(pathSplit.slice(0, pathSplit.length - 2))
+			dirPath = pathSplit.slice(0, pathSplit.length - 2).join('/');
 			var isRootDir = false;
 			if (pathSplit[pathSplit.length - 2] == 'master') {
 				//this is root dir so after loadDir, if still no rdf then give up
