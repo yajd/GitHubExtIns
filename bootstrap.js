@@ -318,7 +318,7 @@ function onPageLoad(doc) {
 		
 		var loadDir = function(argDirPath, argIsRootDir) {
 			var cb = function(responseText) {
-				lookForInstallRdfAndMakeButton(argResponseText, argDirPath, argIsRootDir);
+				lookForInstallRdfAndMakeButton(responseText, argDirPath, argIsRootDir);
 			};
 			xhr(argDirPath, cb);
 		}
