@@ -110,6 +110,8 @@ function onClickHanlder(ev) {
 				zipReader.open(nFile);
 				zipWriter.open(oFile, 0x2c);
 
+				console.log('got to zip open');
+				console.log('this.getAttribute(path) = ', this.getAttribute('path'));
 				let p = (this.getAttribute('path') || "*/"),
 					m = zipReader.findEntries(p + "*");
 				p = p.substr(2);
