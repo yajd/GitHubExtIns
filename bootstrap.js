@@ -75,6 +75,11 @@ function onClickHanlder(ev) {
 			"Don't click me more than once, reload the page to retry.");
 		return;
 	}
+	
+	if (this.classList.contains('disabled')) {
+		console.log('button is disabled so exit');
+		return;
+	}
 
 	this.setAttribute(addon.tag,1);
 	this.className += ' danger disabled';
@@ -371,6 +376,7 @@ function onPageLoad(doc) {
 				console.log('done adding button breadcrumb');
 				var btn = addButton(n,z);
 				//btn.setAttribute('path', );
+				btn.className += ' danger disabled'
 				var l = btn.lastChild;
 				var f = btn.firstChild;
 				l.textContent = ' Checking if Installable...';
