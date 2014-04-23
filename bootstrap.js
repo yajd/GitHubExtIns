@@ -292,6 +292,36 @@ function onPageLoad(doc) {
 			}
 		}
 	}
+	else if (var editForm = doc.querySelector('.js-blob-form.js-blob-edit-form') && editForm.hasAttribute('action')) {
+		//add disabled button saying it is checking parent dirs for install.rdf
+		var filePath = editForm.getAttribute('action'); //'https://github.com/yajd/XPICompiler/tree-save/master/release/bootstrap.js';
+		//start searching parent dirs till find intall.rdf, first install.rdf it finds it will install that and edit this file into it
+		var determineAndloadDir = function(argFilePath) {
+			var pathSplit = argFilePath.split('/');
+			dirPath = pathSplit.join(pathSplit.slice(0, pathSplit.length - 2))
+			var isRootDir = false;
+			if (pathSplit[pathSplit.length - 2] == 'master') {
+				//this is root dir so after loadDir, if still no rdf then give up
+				isRootDir = true;
+			}
+			loadDir(dirPath, isRootDir);
+		}
+		
+		var loadDir = function(argDirPath, argIsRootDir) {
+			var cb = function(responseText) {
+				lookForInstallRdfAndMakeButton(argResponseText, argDirPath, argIsRootDir);
+			};
+			xhr(argDirPath, cb);
+		}
+		
+		var lookForInstallRdfAndMakeButton = function(argResponseText, argDirPath, argIsRootDir) {
+			//if src has install.rdf then do addButton else if !argIsRootDirPath then determineAndloadDir(argDirPath) ELSE give up
+			console.log(argResponseText);
+		}
+		
+		determineAndloadDir(filePath);
+		//start searching for rdf
+	}
 }
 
 function loadIntoWindow(window) {
