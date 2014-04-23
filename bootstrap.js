@@ -250,6 +250,8 @@ function addButton(n,u) {
 			n.firstChild.style.verticalAlign = 'baseline';
 		}
 	}
+	
+	return n;
 }
 
 function onPageLoad(doc) {
@@ -367,7 +369,12 @@ function onPageLoad(doc) {
 
 			if( n ) {
 				console.log('done adding button breadcrumb');
-				addButton(n,z);
+				var btn = addButton(n,z);
+				//btn.setAttribute('path', );
+				var l = this.lastChild,
+				var f = this.firstChild;
+				l.textContent = ' Checking if Installable...';
+				f.className = f.className.replace('plus','hourglass');
 			}
 		}
 	}
