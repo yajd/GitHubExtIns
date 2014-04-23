@@ -299,8 +299,15 @@ function onPageLoad(doc) {
 		var filePath = editForm.getAttribute('action'); //'https://github.com/yajd/XPICompiler/tree-save/master/release/bootstrap.js';
 		//start searching parent dirs till find intall.rdf, first install.rdf it finds it will install that and edit this file into it
 		var determineAndloadDir = function(argFilePath) {
+			if (argFilePath[0] == '/') {
+				var spliceOrigin = true;
+				argFilePath = argFilePath.slice(1);
+			}
 			var pathSplit = argFilePath.split('/');
-			dirPath = pathSplit.slice(0, pathSplit.length - 2).join('/');
+			if (spliceOrigin) {
+			   pathSplit.splice(0, 0, doc.defaultView.location.origin);
+			}
+			dirPath = pathSplit.slice(0, pathSplit.length - 1).join('/');
 			var isRootDir = false;
 			if (pathSplit[pathSplit.length - 2] == 'master') {
 				//this is root dir so after loadDir, if still no rdf then give up
