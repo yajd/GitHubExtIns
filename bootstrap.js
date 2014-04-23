@@ -354,12 +354,12 @@ function onPageLoad(doc) {
 
 		if(!n) {
 			console.log('n not found');
-			console.log('so looking for file nav');
-			n = doc.querySelector('div.file-navigation');
+			console.log('so looking for breadcrumb');
+			n = doc.querySelector('div.breadcrumb');
 			n = n && n.firstElementChild;
 
 			if( n ) {
-				console.log('done adding button file nav');
+				console.log('done adding button breadcrumb');
 				addButton(n,z);
 			}
 		}
