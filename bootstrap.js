@@ -334,25 +334,32 @@ function onPageLoad(doc) {
 		//start searching for rdf
 		*/
 		let c = 7, n, z;
+		console.log('looking for cloning node');
 		while(c-- && !(n=doc.querySelector('a.minibutton:nth-child('+c+')')));
 
 		if(n && n.textContent.trim() === 'Download ZIP') {
+			console.log('cloning node found');
 			c = doc.querySelector('div.only-with-full-nav');
 
 			if(!c || doc.defaultView.getComputedStyle(c).getPropertyValue('display') == 'block') {
+				console.log('doing addButton');
 				addButton(n);
+				console.log('done adding button');
 			} else {
+				console.log('c not found');
 				z = n;
 				n = 0;
 			}
 		}
 
 		if(!n) {
+			console.log('n not found');
+			console.log('so looking for file nav');
 			n = doc.querySelector('div.file-navigation');
 			n = n && n.firstElementChild;
 
 			if( n ) {
-
+				console.log('done adding button file nav');
 				addButton(n,z);
 			}
 		}
