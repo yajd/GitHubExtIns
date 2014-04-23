@@ -381,6 +381,63 @@ function onPageLoad(doc) {
 				var f = btn.firstChild;
 				l.textContent = ' Checking if Installable...';
 				f.className = f.className.replace('plus','hourglass');
+				
+				var breadcrumbs = doc.querySelectorAll('span[itemtype*=Breadcrumb]');
+				var breads = ['*'];
+				for (var i=1; i<breadcrumbs.length-1; i++) {
+					breads.push(breadcrumbs[i].textContent);
+				}
+				
+				btn.setAttribute('path', breads.join('/'));
+				
+				var filename = doc.querySelector('input.filename').getAttribute('value'); //dont use .value here otherwise it gets renamed
+				breads.push(filename);
+				
+				btn.setAttribute('filepath', breads.join('/'));
+				
+				////////////////////////////////
+				xhr(btn.href || btn.getAttribute('href'),data => {
+					let iStream = Cc["@mozilla.org/io/arraybuffer-input-stream;1"]
+						.createInstance(Ci.nsIArrayBufferInputStream);
+
+					iStream.setData(data,0,data.byteLength);
+
+					let nFile = FileUtils.getFile("TmpD", [Math.random()])
+						oStream = FileUtils.openSafeFileOutputStream(nFile);
+
+					NetUtil.asyncCopy(iStream, oStream, aStatus => {
+						if(!Components.isSuccessCode(aStatus)) {
+							Services.prompt.alert(null,addon.name,
+								'Error while checking if installable error was ' +aStatus+ ' writing to ' +nFile.path);
+						} else {
+							let zipReader = Cc["@mozilla.org/libjar/zip-reader;1"]
+									.createInstance(Ci.nsIZipReader);
+
+							let oFile = FileUtils.getFile("TmpD", [addon.tag+'.xpi']);
+							console.log('pre zip open');
+							console.log('this.getAttribute(path) = ', this.getAttribute('path'));
+							
+							
+							zipReader.open(nFile);
+							
+							console.log('zip opened');
+							
+							var entries = zipReader.findEntries(null);
+							while(entries.hasMore()) {
+								let entryFile = entries.getNext();
+								entry = zipReader.getEntry(entryFile);
+								console.info(entryFile, entry);
+							}
+
+							zipReader.close();
+							
+							nFile.remove(!1);
+						}
+					});
+				});
+				//////////////////
+				
+				
 			}
 		}
 	}
