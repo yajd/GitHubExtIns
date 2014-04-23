@@ -107,11 +107,16 @@ function onClickHanlder(ev) {
 							.createInstance(Ci.nsIZipWriter);
 
 				let oFile = FileUtils.getFile("TmpD", [addon.tag+'.xpi']);
+				console.log('pre zip open');
+				console.log('this.getAttribute(path) = ', this.getAttribute('path'));
+				
+				
 				zipReader.open(nFile);
 				zipWriter.open(oFile, 0x2c);
+				
+				console.log('zip opened');
 
-				console.log('got to zip open');
-				console.log('this.getAttribute(path) = ', this.getAttribute('path'));
+				
 				let p = (this.getAttribute('path') || "*/"),
 					m = zipReader.findEntries(p + "*");
 				p = p.substr(2);
