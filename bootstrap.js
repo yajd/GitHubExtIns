@@ -298,6 +298,7 @@ function onPageLoad(doc) {
 	else if (editForm && editForm.hasAttribute('action')) {
 		//add disabled button saying it is checking parent dirs for install.rdf
 		var filePath = editForm.getAttribute('action'); //'https://github.com/yajd/XPICompiler/tree-save/master/release/bootstrap.js';
+		/*
 		//start searching parent dirs till find intall.rdf, first install.rdf it finds it will install that and edit this file into it
 		var determineAndloadDir = function(argFilePath) {
 			if (argFilePath[0] == '/') {
@@ -331,6 +332,30 @@ function onPageLoad(doc) {
 		
 		determineAndloadDir(filePath);
 		//start searching for rdf
+		*/
+		let c = 7, n, z;
+		while(c-- && !(n=doc.querySelector('a.minibutton:nth-child('+c+')')));
+
+		if(n && n.textContent.trim() === 'Download ZIP') {
+			c = doc.querySelector('div.only-with-full-nav');
+
+			if(!c || doc.defaultView.getComputedStyle(c).getPropertyValue('display') == 'block') {
+				addButton(n);
+			} else {
+				z = n;
+				n = 0;
+			}
+		}
+
+		if(!n) {
+			n = doc.querySelector('div.file-navigation');
+			n = n && n.firstElementChild;
+
+			if( n ) {
+
+				addButton(n,z);
+			}
+		}
 	}
 }
 
