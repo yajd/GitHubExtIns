@@ -371,8 +371,8 @@ function onPageLoad(doc) {
 				console.log('done adding button breadcrumb');
 				var btn = addButton(n,z);
 				//btn.setAttribute('path', );
-				var l = this.lastChild,
-				var f = this.firstChild;
+				var l = btn.lastChild,
+				var f = btn.firstChild;
 				l.textContent = ' Checking if Installable...';
 				f.className = f.className.replace('plus','hourglass');
 			}
