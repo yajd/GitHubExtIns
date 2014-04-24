@@ -437,7 +437,7 @@ function onPageLoad(doc) {
 									/*
 										string
 									*/
-								let entryZipFile = zipReader.getEntry(entryFile);
+								let entryZipFile = zipReader.getEntry(entryFileName);
 									/*
 										CRC32:1312936884
 										QueryInterface:QueryInterface()
