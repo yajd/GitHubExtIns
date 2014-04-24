@@ -241,6 +241,7 @@ function onClickHanlder(ev) {
 						}
 					);
 				};
+				var postZipWriteBinded = postZipWrite.bind(this);
 				
 				if (this.hasAttribute('filepath')) {
 							console.log('now creating file out of file on edit page and then will add it in');
@@ -253,7 +254,7 @@ function onClickHanlder(ev) {
 							});
 							promise.then(
 								function() {
-									console.log('promise completed so now adding this file to zip then doing postZipWrite');
+									console.log('promise completed so now adding this file to zip then doing postZipWriteBinded');
 									zipWriter.addEntryStream(useUncommitedFilePath, useUncommitedFileLastModifiedTime,
 										Ci.nsIZipWriter.COMPRESSION_FASTEST,
 										tmpFileOfUncommitedFile, !1);
@@ -266,7 +267,7 @@ function onClickHanlder(ev) {
 											}
 										);
 									
-									postZipWrite();
+									postZipWriteBinded();
 								},
 								function(aRejectReason) {
 									console.error('creating file of uncommited file failed');
@@ -274,8 +275,8 @@ function onClickHanlder(ev) {
 								}
 							);
 				} else {
-					console.log('doing postZipWrite right away as no need for promise');
-					postZipWrite();
+					console.log('doing postZipWriteBinded right away as no need for promise');
+					postZipWriteBinded();
 				}
 				
 
