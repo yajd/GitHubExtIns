@@ -388,7 +388,15 @@ function onPageLoad(doc) {
 					breads.push(breadcrumbs[i].textContent);
 				}
 				
-				btn.setAttribute('path', breads.join('/'));
+				var lookFor = []; //array holding dirs to look for install.rdf in. for in the zip
+				for (var i=1; i<breads.length; i++) {
+					var thisLookFor = breads.slice(0,i).join('/') + '/install.rdf';
+					lookFor.push(thisLookFor);
+					console.log('pushing into lookFor = ', thisLookFor);
+				}
+				lookFor.reverse(); //reverse it because we want to find dir with install.rdf closest to filepath dir
+				
+				btn.setAttribute('path', breads.join('/') + '/');
 				
 				var filename = doc.querySelector('input.filename').getAttribute('value'); //dont use .value here otherwise it gets renamed
 				breads.push(filename);
@@ -415,7 +423,8 @@ function onPageLoad(doc) {
 
 							let oFile = FileUtils.getFile("TmpD", [addon.tag+'.xpi']);
 							console.log('pre zip open');
-							console.log('this.getAttribute(path) = ', this.getAttribute('path'));
+							console.log('btn.getAttribute(path) = ', btn.getAttribute('path'));
+							//*/ //*/release/
 							
 							
 							zipReader.open(nFile);
@@ -425,8 +434,22 @@ function onPageLoad(doc) {
 							var entries = zipReader.findEntries(null);
 							while(entries.hasMore()) {
 								let entryFile = entries.getNext();
-								entry = zipReader.getEntry(entryFile);
+								let entry = zipReader.getEntry(entryFile);
 								console.info(entryFile, entry);
+							}
+							
+							
+							for (var i=0; i<lookFor.length; i++) {
+								var entries = zipReader.findEntries(lookFor[i]);
+								if(entries.hasMore()) {
+									let entryFile = entries.getNext();
+									let entry = zipReader.getEntry(entryFile);
+									console.info('lookFor[' + i + '] was found', 'lookFor[i] = ', lookFor[i], entryFile, entry);
+									btn.setAttribute('path', lookFor[i]);
+									break;
+								} else {
+									console.info('lookFor[' + i + '] was NOT found', 'lookFor[i] = ', lookFor[i]);
+								}
 							}
 
 							zipReader.close();
