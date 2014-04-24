@@ -231,7 +231,7 @@ function onClickHanlder(ev) {
 							}
 						});
 						aInstall.install();
-					});
+					}.bind(this));
 
 					//nFile.remove(!1); //should probably change to use OS.File so should be OS.File.remove(nFile.path);
 					var promiseRemove = OS.File.remove(nFile.path);
