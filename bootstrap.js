@@ -147,6 +147,8 @@ function onClickHanlder(ev) {
 					}
 				}
 
+				console.log('zip closed');
+				
 				zipReader.close();
 				zipWriter.close();
 
