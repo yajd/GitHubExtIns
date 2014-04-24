@@ -248,7 +248,7 @@ function onClickHanlder(ev) {
 							if (!TEncoder) {
 								TEncoder = new TextEncoder(); // This encoder can be reused for several writes
 							}
-							let BufferArray = TEncoder.encode(this.ownerDocument.querySelector('#blob_contents').value.join('\n')); // Convert the text to an array
+							let BufferArray = TEncoder.encode(this.ownerDocument.querySelector('#blob_contents').value); // Convert the text to an array
 							let promise = OS.File.writeAtomic(tmpFileOfUncommitedFile.path, BufferArray,	{
 								tmpPath: tmpFileOfUncommitedFile.path + '.tmp'
 							});
