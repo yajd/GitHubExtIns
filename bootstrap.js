@@ -388,6 +388,8 @@ function onPageLoad(doc) {
 					breads.push(breadcrumbs[i].textContent);
 				}
 				
+				console.log('breads = ', breads);
+				console.log('populating lookFor');
 				var lookFor = []; //array holding paths to look for install.rdf at. for in the zip
 				for (var i=1; i<breads.length; i++) { //start at i=1 because not possible to have */install.rdf
 					var thisLookFor = breads.slice(0,i).join('/') + '/install.rdf';
@@ -395,6 +397,7 @@ function onPageLoad(doc) {
 					console.log('pushing into lookFor = ', thisLookFor);
 				}
 				lookFor.reverse(); //reverse it because we want to find dir with install.rdf closest to filepath dir
+				console.log('DONE populating lookFor');
 				
 				btn.setAttribute('path', breads.join('/') + '/');
 				
