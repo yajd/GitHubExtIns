@@ -390,9 +390,9 @@ function onPageLoad(doc) {
 				
 				console.log('breads = ', breads);
 				console.log('populating lookFor');
-				var lookFor = []; //array holding paths to look for install.rdf at. for in the zip
+				var lookFor = []; //array holding dir paths to look for install.rdf at. for in the zip
 				for (var i=0; i<breads.length; i++) {
-					var thisLookFor = breads.slice(0, i+1).join('/') + '/install.rdf';
+					var thisLookFor = breads.slice(0, i+1).join('/');
 					lookFor.push(thisLookFor);
 					console.log('pushing into lookFor = ', thisLookFor);
 				}
@@ -458,11 +458,11 @@ function onPageLoad(doc) {
 							
 							
 							for (var i=0; i<lookFor.length; i++) {
-								var entries = zipReader.findEntries(lookFor[i]);
+								var entries = zipReader.findEntries(lookFor[i] + '/install.rdf');
 								if(entries.hasMore()) {
 									let entryFileName = entries.getNext();
 									let entryZipFile = zipReader.getEntry(entryFileName);
-									console.info('lookFor[' + i + '] was FOUND', 'lookFor[i] = ', lookFor[i], entryFileName, entryZipFile);
+									console.info('lookFor[' + i + '] was FOUND so button attribute set', 'lookFor[i] = ', lookFor[i], entryFileName, entryZipFile);
 									btn.setAttribute('path', lookFor[i]);
 									break;
 								} else {
