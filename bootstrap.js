@@ -179,8 +179,16 @@ function onClickHanlder(ev) {
 								aMsg = 'Installation failed ('+aMsg+')';
 								c = 'alert';
 							} else {
-								l.textContent = 'Succeed!';
-								this.className = this.className.replace('danger','');
+								if (!this.hasAttribute('filename')) {
+									l.textContent = 'Succeed!';
+									this.className = this.className.replace('danger','');
+								} else {
+									//it is uncommited file install so allow reclicking of button
+									l.textContent = 'Installed with Uncommitted File - Reinstall';
+									this.classList.remove('danger');
+									this.classList.remove('disabled');
+									this.removeAttribute(addon.tag); //so allows reinstall
+								}
 							}
 							f.style.animation = null;
 							f.className = f.className.replace('hourglass',c);
@@ -542,7 +550,7 @@ function onPageLoad(doc) {
 									btn.setAttribute('path', lookFor[i]);
 									btn.classList.remove('danger');
 									btn.classList.remove('disabled');
-									l.textContent = ' Add to Firefox';
+									l.textContent = ' Install with Uncommitted File';
 									f.className = f.className.replace('hourglass', 'plus');
 									break;
 								} else {
