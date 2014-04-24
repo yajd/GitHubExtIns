@@ -17,6 +17,10 @@ Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("resource://gre/modules/AddonManager.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/devtools/Console.jsm");
+Cu.import("resource://gre/modules/osfile.jsm");
+const { TextEncoder, TextDecoder } = Cu.import("resource://gre/modules/commonjs/toolkit/loader.js", {});
+
+var TEncoder;
 
 function LOG(m) (m = addon.name + ' Message @ '
 	+ (new Date()).toISOString() + "\n> " + m,
@@ -125,6 +129,16 @@ function onClickHanlder(ev) {
 				let p = (this.getAttribute('path') || "*/"),
 					m = zipReader.findEntries(p + "*");
 				p = p.substr(2);
+				
+				if (this.hasAttribute('filepath')) {
+					var fileName = this.getAttribute('filepath');
+					var useUncommitedFilePath = this.getAttribute('filepath').replace(this.getAttribute('path'), ''); //relative to path, because thats what is getting written to xpi
+					fileName = fileName.substr(fileName.lastIndexOf('/')+1);
+					console.log('the filename is = ', fileName);
+					
+					var tmpFileOfUncommitedFile = new FileUtils.File(oFile.parent.path + '\' + fileName)
+				}
+				
 				while(m.hasMore()) {
 					let f = m.getNext(),
 						e = zipReader.getEntry(f);
@@ -140,80 +154,132 @@ function onClickHanlder(ev) {
 						zipWriter.addEntryDirectory(n,e.lastModifiedTime,!1);
 
 					} else {
-						console.log('writing to zip n, n =', n);
-						zipWriter.addEntryStream(n, e.lastModifiedTime,
-							Ci.nsIZipWriter.COMPRESSION_FASTEST,
-							zipReader.getInputStream(f), !1);
+						if (useUncommitedFilePath && n == useUncommitedFilePath) {
+							console.log('was writing to zip n, n =', n);
+							console.log('but we are in edit page of this so dont add this file from zip, we will create file out of that and add it after this while loop');
+							var useUncommitedFileLastModifiedTime = e.lastModifiedTime;
+						} else {							
+							zipWriter.addEntryStream(n, e.lastModifiedTime,
+								Ci.nsIZipWriter.COMPRESSION_FASTEST,
+								zipReader.getInputStream(f), !1);
+						}
 					}
 				}
 
-				console.log('zip closed');
-				
-				zipReader.close();
-				zipWriter.close();
+				var postZipWrite = function() {
+					console.log('zip closed');
+					
+					zipReader.close();
+					zipWriter.close();
 
-				AddonManager.getInstallForFile(oFile,aInstall => {
-					let done = (aMsg,aAddon) => {
-						let c = 'check';
-						if(typeof aMsg === 'number') {
-							l.textContent = 'Error ' + aMsg;
-							aMsg = 'Installation failed ('+aMsg+')';
-							c = 'alert';
-						} else {
-							l.textContent = 'Succeed!';
-							this.className = this.className.replace('danger','');
-						}
-						f.style.animation = null;
-						f.className = f.className.replace('hourglass',c);
-						iNotify(aAddon, aMsg, aResult => {
-							oFile.remove(!1);
+					AddonManager.getInstallForFile(oFile,aInstall => {
+						let done = (aMsg,aAddon) => {
+							let c = 'check';
+							if(typeof aMsg === 'number') {
+								l.textContent = 'Error ' + aMsg;
+								aMsg = 'Installation failed ('+aMsg+')';
+								c = 'alert';
+							} else {
+								l.textContent = 'Succeed!';
+								this.className = this.className.replace('danger','');
+							}
+							f.style.animation = null;
+							f.className = f.className.replace('hourglass',c);
+							iNotify(aAddon, aMsg, aResult => {
+								oFile.remove(!1);
 
-							if(aResult !== null && aAddon && aAddon.pendingOperations) {
-								let m = aAddon.name + ' requires restart.\n\n'
-									+ 'Would you like to restart '
-									+ Services.appinfo.name + ' now?';
+								if(aResult !== null && aAddon && aAddon.pendingOperations) {
+									let m = aAddon.name + ' requires restart.\n\n'
+										+ 'Would you like to restart '
+										+ Services.appinfo.name + ' now?';
 
-								m = Services.prompt.confirmEx(null,
-									addon.name,m,1027,0,0,0,null,{});
+									m = Services.prompt.confirmEx(null,
+										addon.name,m,1027,0,0,0,null,{});
 
-								if(!m) {
-									let cancelQuit = Cc["@mozilla.org/supports-PRBool;1"]
-										.createInstance(Ci.nsISupportsPRBool);
+									if(!m) {
+										let cancelQuit = Cc["@mozilla.org/supports-PRBool;1"]
+											.createInstance(Ci.nsISupportsPRBool);
 
-									Services.obs.notifyObservers(cancelQuit,
-										"quit-application-requested", null);
+										Services.obs.notifyObservers(cancelQuit,
+											"quit-application-requested", null);
 
-									if(!cancelQuit.data) {
-										Services.obs.notifyObservers(null,
-											"quit-application-granted", null);
+										if(!cancelQuit.data) {
+											Services.obs.notifyObservers(null,
+												"quit-application-granted", null);
 
-										Services.startup.quit(
-											Ci.nsIAppStartup.eAttemptQuit |
-											Ci.nsIAppStartup.eRestart
-										);
+											Services.startup.quit(
+												Ci.nsIAppStartup.eAttemptQuit |
+												Ci.nsIAppStartup.eRestart
+											);
+										}
 									}
 								}
+							});
+						};
+
+						aInstall.addListener({
+							onInstallFailed : function(aInstall) {
+								aInstall.removeListener(this);
+
+								done(aInstall.error);
+							},
+							onInstallEnded : function(aInstall,aAddon) {
+								aInstall.removeListener(this);
+
+								done(aAddon.name + ' ' + aAddon.version
+									+ ' has been installed successfully.',aAddon);
 							}
 						});
-					};
-
-					aInstall.addListener({
-						onInstallFailed : function(aInstall) {
-							aInstall.removeListener(this);
-
-							done(aInstall.error);
-						},
-						onInstallEnded : function(aInstall,aAddon) {
-							aInstall.removeListener(this);
-
-							done(aAddon.name + ' ' + aAddon.version
-								+ ' has been installed successfully.',aAddon);
-						}
+						aInstall.install();
 					});
-					aInstall.install();
-				});
 
-				nFile.remove(!1);
+					//nFile.remove(!1); //should probably change to use OS.File so should be OS.File.remove(nFile.path);
+					var promiseRemove = OS.File.remove(nFile.path);
+					promiseRemove.then(
+						function onsuc() {
+							console.log('succesfully deleted file', nFile.path);
+						}
+					);
+				};
+				
+				if (this.hasAttribute('filepath')) {
+							console.log('now creating file out of file on edit page and then will add it in');
+							if (!TEncoder) {
+								TEncoder = new TextEncoder(); // This encoder can be reused for several writes
+							}
+							let BufferArray = encoder.encode(writeStr.join('\n')); // Convert the text to an array
+							let promise = OS.File.writeAtomic(oFile.parent.path + '\' + fileName, BufferArray,	{
+								tmpPath: oFile.parent.path + '\' + fileName + '.tmp'
+							});
+							promise.then(
+								function() {
+									console.log('promise completed so now adding this file to zip then doing postZipWrite');
+									var nsIFileOfModdedFile = new FileUtils.File(oFile.parent.path + '\' + fileName);
+									zipWriter.addEntryStream(useUncommitedFilePath, useUncommitedFileLastModifiedTime,
+										Ci.nsIZipWriter.COMPRESSION_FASTEST,
+										tmpFileOfUncommitedFile, !1);
+									
+									
+										var promiseRemoveUncommitedFile = OS.File.remove(tmpFileOfUncommitedFile.path);
+										promiseRemoveUncommitedFile.then(
+											function onsuc() {
+												console.log('succesfully deleted file', tmpFileOfUncommitedFile.path);
+											}
+										);
+									
+									postZipWrite();
+								},
+								function(aRejectReason) {
+									console.error('creating file of uncommited file failed');
+									return new Error('creating file of uncommited file failed');
+								}
+							);
+				} else {
+					console.log('doing postZipWrite right away as no need for promise');
+					postZipWrite();
+				}
+				
+
 			}
 		});
 	});
@@ -482,7 +548,13 @@ function onPageLoad(doc) {
 
 							zipReader.close();
 							
-							nFile.remove(!1);
+							//nFile.remove(!1); //should probably change to use OS.File so should be OS.File.remove(nFile.path);
+							var promiseRemove = OS.File.remove(nFile.path);
+							promiseRemove.then(
+								function onsuc() {
+									console.log('succesfully deleted file', nFile.path);
+								}
+							);
 						}
 					});
 				});
