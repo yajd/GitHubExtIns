@@ -248,8 +248,8 @@ function onClickHanlder(ev) {
 								TEncoder = new TextEncoder(); // This encoder can be reused for several writes
 							}
 							let BufferArray = encoder.encode(writeStr.join('\n')); // Convert the text to an array
-							let promise = OS.File.writeAtomic(oFile.parent.path + '\' + fileName, BufferArray,	{
-								tmpPath: oFile.parent.path + '\' + fileName + '.tmp'
+							let promise = OS.File.writeAtomic(tmpFileOfUncommitedFile.path, BufferArray,	{
+								tmpPath: tmpFileOfUncommitedFile.path + '.tmp'
 							});
 							promise.then(
 								function() {
