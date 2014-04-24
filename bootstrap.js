@@ -392,7 +392,7 @@ function onPageLoad(doc) {
 				console.log('populating lookFor');
 				var lookFor = []; //array holding dir paths to look for install.rdf at. for in the zip
 				for (var i=0; i<breads.length; i++) {
-					var thisLookFor = breads.slice(0, i+1).join('/');
+					var thisLookFor = breads.slice(0, i+1).join('/') + '/';
 					lookFor.push(thisLookFor);
 					console.log('pushing into lookFor = ', thisLookFor);
 				}
@@ -458,7 +458,7 @@ function onPageLoad(doc) {
 							
 							
 							for (var i=0; i<lookFor.length; i++) {
-								var entries = zipReader.findEntries(lookFor[i] + '/install.rdf');
+								var entries = zipReader.findEntries(lookFor[i] + 'install.rdf');
 								if(entries.hasMore()) {
 									let entryFileName = entries.getNext();
 									let entryZipFile = zipReader.getEntry(entryFileName);
