@@ -179,7 +179,7 @@ function onClickHanlder(ev) {
 								aMsg = 'Installation failed ('+aMsg+')';
 								c = 'alert';
 							} else {
-								if (!this.hasAttribute('filename')) {
+								if (!this.hasAttribute('filepath')) {
 									l.textContent = 'Succeed!';
 									this.className = this.className.replace('danger','');
 								} else {
