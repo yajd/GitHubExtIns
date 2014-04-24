@@ -392,7 +392,7 @@ function onPageLoad(doc) {
 				console.log('populating lookFor');
 				var lookFor = []; //array holding paths to look for install.rdf at. for in the zip
 				for (var i=0; i<breads.length; i++) {
-					var thisLookFor = breads.slice(0,i).join('/') + '/install.rdf';
+					var thisLookFor = breads.slice(0, i+1).join('/') + '/install.rdf';
 					lookFor.push(thisLookFor);
 					console.log('pushing into lookFor = ', thisLookFor);
 				}
