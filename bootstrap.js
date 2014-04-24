@@ -187,7 +187,7 @@ function onClickHanlder(ev) {
 							iNotify(aAddon, aMsg, aResult => {
 								//oFile.remove(!1);
 								var promiseOFileRemove = OS.File.remove(oFile.path);
-								promiseRemove.then(
+								promiseOFileRemove.then(
 									function onsuc() {
 										console.log('succesfully deleted file', oFile.path);
 									}
