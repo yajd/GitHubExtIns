@@ -384,14 +384,14 @@ function onPageLoad(doc) {
 				
 				var breadcrumbs = doc.querySelectorAll('span[itemtype*=Breadcrumb]');
 				var breads = ['*'];
-				for (var i=1; i<breadcrumbs.length-1; i++) {
+				for (var i=1; i<breadcrumbs.length-1; i++) { //start at i=1 because not possible to have */install.rdf or any files */ because zips off of github first hold a folder
 					breads.push(breadcrumbs[i].textContent);
 				}
 				
 				console.log('breads = ', breads);
 				console.log('populating lookFor');
 				var lookFor = []; //array holding paths to look for install.rdf at. for in the zip
-				for (var i=1; i<breads.length; i++) { //start at i=1 because not possible to have */install.rdf
+				for (var i=0; i<breads.length; i++) {
 					var thisLookFor = breads.slice(0,i).join('/') + '/install.rdf';
 					lookFor.push(thisLookFor);
 					console.log('pushing into lookFor = ', thisLookFor);
