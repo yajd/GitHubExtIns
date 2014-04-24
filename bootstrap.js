@@ -464,9 +464,17 @@ function onPageLoad(doc) {
 									let entryZipFile = zipReader.getEntry(entryFileName);
 									console.info('lookFor[' + i + '] was FOUND so button attribute set', 'lookFor[i] = ', lookFor[i], entryFileName, entryZipFile);
 									btn.setAttribute('path', lookFor[i]);
+									btn.classList.remove('danger');
+									btn.classList.remove('disabled');
+									l.textContent = ' Add to Firefox';
+									f.className = f.className.replace('hourglass', 'plus');
 									break;
 								} else {
 									console.info('lookFor[' + i + '] was NOT found', 'lookFor[i] = ', lookFor[i]);
+									if (i == lookFor.length -1) {
+										console.log('no install.rdf found in parent dirs of filepath so this is not an installable xpi so removing button');
+										btn.parentNode.removeChild(btn);
+									}
 								}
 							}
 
