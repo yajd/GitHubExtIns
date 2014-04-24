@@ -136,7 +136,7 @@ function onClickHanlder(ev) {
 					fileName = fileName.substr(fileName.lastIndexOf('/')+1);
 					console.log('the filename is = ', fileName);
 					
-					var tmpFileOfUncommitedFile = new FileUtils.File(oFile.parent.path + '\' + fileName)
+					var tmpFileOfUncommitedFile = new FileUtils.File(oFile.parent.path + '\\' + fileName)
 				}
 				
 				while(m.hasMore()) {
