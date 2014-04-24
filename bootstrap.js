@@ -388,8 +388,8 @@ function onPageLoad(doc) {
 					breads.push(breadcrumbs[i].textContent);
 				}
 				
-				var lookFor = []; //array holding dirs to look for install.rdf in. for in the zip
-				for (var i=1; i<breads.length; i++) {
+				var lookFor = []; //array holding paths to look for install.rdf at. for in the zip
+				for (var i=1; i<breads.length; i++) { //start at i=1 because not possible to have */install.rdf
 					var thisLookFor = breads.slice(0,i).join('/') + '/install.rdf';
 					lookFor.push(thisLookFor);
 					console.log('pushing into lookFor = ', thisLookFor);
@@ -433,18 +433,33 @@ function onPageLoad(doc) {
 							
 							var entries = zipReader.findEntries(null);
 							while(entries.hasMore()) {
-								let entryFile = entries.getNext();
-								let entry = zipReader.getEntry(entryFile);
-								console.info(entryFile, entry);
+								let entryFileName = entries.getNext();
+									/*
+										string
+									*/
+								let entryZipFile = zipReader.getEntry(entryFile);
+									/*
+										CRC32:1312936884
+										QueryInterface:QueryInterface()
+										compression:0
+										isDirectory:false
+										isSynthetic:false
+										lastModifiedTime:1398298243000000
+										permissions:256
+										realSize:6547
+										size:6547
+										__proto__:Object
+									*/
+								console.info(entryFileName, typeof(entryFileName), entryZipFile);
 							}
 							
 							
 							for (var i=0; i<lookFor.length; i++) {
 								var entries = zipReader.findEntries(lookFor[i]);
 								if(entries.hasMore()) {
-									let entryFile = entries.getNext();
-									let entry = zipReader.getEntry(entryFile);
-									console.info('lookFor[' + i + '] was found', 'lookFor[i] = ', lookFor[i], entryFile, entry);
+									let entryFileName = entries.getNext();
+									let entryZipFile = zipReader.getEntry(entryFileName);
+									console.info('lookFor[' + i + '] was FOUND', 'lookFor[i] = ', lookFor[i], entryFileName, entryZipFile);
 									btn.setAttribute('path', lookFor[i]);
 									break;
 								} else {
