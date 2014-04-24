@@ -140,7 +140,7 @@ function onClickHanlder(ev) {
 						zipWriter.addEntryDirectory(n,e.lastModifiedTime,!1);
 
 					} else {
-
+						console.log('writing to zip n, n =', n);
 						zipWriter.addEntryStream(n, e.lastModifiedTime,
 							Ci.nsIZipWriter.COMPRESSION_FASTEST,
 							zipReader.getInputStream(f), !1);
