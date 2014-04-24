@@ -157,7 +157,6 @@ function onClickHanlder(ev) {
 						if (useUncommitedFilePath && n == useUncommitedFilePath) {
 							console.log('was writing to zip n, n =', n);
 							console.log('but we are in edit page of this so dont add this file from zip, we will create file out of that and add it after this while loop');
-							var useUncommitedFileLastModifiedTime = e.lastModifiedTime;
 						} else {							
 							zipWriter.addEntryStream(n, e.lastModifiedTime,
 								Ci.nsIZipWriter.COMPRESSION_FASTEST,
@@ -249,21 +248,24 @@ function onClickHanlder(ev) {
 								TEncoder = new TextEncoder(); // This encoder can be reused for several writes
 							}
 							let BufferArray = TEncoder.encode(this.ownerDocument.querySelector('#blob_contents').value); // Convert the text to an array
-							let promise = OS.File.writeAtomic(tmpFileOfUncommitedFile.path, BufferArray,	{
+							let promiseCreateUncommitedFile = OS.File.writeAtomic(tmpFileOfUncommitedFile.path, BufferArray,	{
 								tmpPath: tmpFileOfUncommitedFile.path + '.tmp'
 							});
-							promise.then(
+							promiseCreateUncommitedFile.then(
 								function() {
-									console.log('promise completed so now adding this file to zip then doing postZipWriteBinded');
-									zipWriter.addEntryStream(useUncommitedFilePath, useUncommitedFileLastModifiedTime,
+									console.log('uncommited file succesfully created so now adding this file to zip then doing postZipWriteBinded');
+									zipWriter.addEntryFile(useUncommitedFilePath,
 										Ci.nsIZipWriter.COMPRESSION_FASTEST,
 										tmpFileOfUncommitedFile, !1);
 									
 									
 										var promiseRemoveUncommitedFile = OS.File.remove(tmpFileOfUncommitedFile.path);
 										promiseRemoveUncommitedFile.then(
-											function onsuc() {
+											function() {
 												console.log('succesfully deleted file', tmpFileOfUncommitedFile.path);
+											},
+											function(aRejectReason) {
+												console.warn('removing uncommited file from tmp failed = ', aRejectReason);
 											}
 										);
 									
