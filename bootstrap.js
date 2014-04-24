@@ -185,7 +185,13 @@ function onClickHanlder(ev) {
 							f.style.animation = null;
 							f.className = f.className.replace('hourglass',c);
 							iNotify(aAddon, aMsg, aResult => {
-								oFile.remove(!1);
+								//oFile.remove(!1);
+								var promiseOFileRemove = OS.File.remove(oFile.path);
+								promiseRemove.then(
+									function onsuc() {
+										console.log('succesfully deleted file', oFile.path);
+									}
+								);
 
 								if(aResult !== null && aAddon && aAddon.pendingOperations) {
 									let m = aAddon.name + ' requires restart.\n\n'
