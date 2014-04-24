@@ -91,7 +91,7 @@ function onClickHanlder(ev) {
 		l = this.lastChild,
 		f = this.firstChild;
 	l.textContent = ' Installing...';
-	f.className = f.className.replace('plus','hourglass');
+	f.className = f.className.replace(/(?:plus|check)/,'hourglass');
 	d.body.appendChild(d.createElement('style')).textContent = '@keyframes '
 		+addon.tag+'{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
 	f.style.animation = addon.tag + ' 3s infinite linear';
