@@ -254,7 +254,6 @@ function onClickHanlder(ev) {
 							promise.then(
 								function() {
 									console.log('promise completed so now adding this file to zip then doing postZipWrite');
-									var nsIFileOfModdedFile = new FileUtils.File(oFile.parent.path + '\' + fileName);
 									zipWriter.addEntryStream(useUncommitedFilePath, useUncommitedFileLastModifiedTime,
 										Ci.nsIZipWriter.COMPRESSION_FASTEST,
 										tmpFileOfUncommitedFile, !1);
