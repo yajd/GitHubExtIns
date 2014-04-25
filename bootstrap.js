@@ -165,12 +165,14 @@ function onClickHanlder(ev) {
 					}
 				}
 
+				var btn = this;
+				
 				var postZipWrite = function() {
 					console.log('zip closed');
 					
 					zipReader.close();
 					zipWriter.close();
-
+					
 					AddonManager.getInstallForFile(oFile,aInstall => {
 						let done = (aMsg,aAddon) => {
 							let c = 'check';
@@ -179,15 +181,15 @@ function onClickHanlder(ev) {
 								aMsg = 'Installation failed ('+aMsg+')';
 								c = 'alert';
 							} else {
-								if (!this.hasAttribute('filepath')) {
+								if (!btn.hasAttribute('filepath')) {
 									l.textContent = 'Succeed!';
-									this.className = this.className.replace('danger','');
+									btn.className = btn.className.replace('danger','');
 								} else {
 									//it is uncommited file install so allow reclicking of button
 									l.textContent = 'Installed with Uncommitted File - Reinstall';
-									this.classList.remove('danger');
-									this.classList.remove('disabled');
-									this.removeAttribute(addon.tag); //so allows reinstall
+									btn.classList.remove('danger');
+									btn.classList.remove('disabled');
+									btn.removeAttribute(addon.tag); //so allows reinstall
 								}
 							}
 							f.style.animation = null;
@@ -197,7 +199,10 @@ function onClickHanlder(ev) {
 								var promiseOFileRemove = OS.File.remove(oFile.path);
 								promiseOFileRemove.then(
 									function onsuc() {
-										console.log('succesfully deleted file', oFile.path);
+										console.log('succesfully deleted ofile', oFile.path);
+									},
+									function(aRejectReason) {
+										console.error('promiseRemove ofile failed = ', aRejectReason);
 									}
 								);
 
@@ -244,13 +249,16 @@ function onClickHanlder(ev) {
 							}
 						});
 						aInstall.install();
-					}).bind(this);
+					});
 
 					//nFile.remove(!1); //should probably change to use OS.File so should be OS.File.remove(nFile.path);
 					var promiseRemove = OS.File.remove(nFile.path);
 					promiseRemove.then(
 						function onsuc() {
-							console.log('succesfully deleted file', nFile.path);
+							console.log('succesfully deleted nfile', nFile.path);
+						},
+						function(aRejectReason) {
+							console.error('promiseRemove nfile failed = ', aRejectReason);
 						}
 					);
 				};
@@ -287,7 +295,6 @@ function onClickHanlder(ev) {
 								},
 								function(aRejectReason) {
 									console.error('creating file of uncommited file failed');
-									return new Error('creating file of uncommited file failed');
 								}
 							);
 				} else {
